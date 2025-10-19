@@ -103,5 +103,50 @@ RateLimitResult check_rate_limit(redisContext* c, const char* identifier, RateLi
 
 // Thực hiện demo các tính năng rate limiter
 void perform_rate_limit_demo(redisContext* c) {
-    printf("Demo rate limiter chưa được implement.\n");
+    if (!c) {
+        printf("❌ Lỗi: Không có kết nối Redis\n");
+        return;
+    }
+
+    printf("\n==========================================\n");
+    printf("    DEMO RATE LIMITING PHÂN TÁN\n");
+    printf("==========================================\n\n");
+
+    // Cấu hình: 10 requests trong 60 giây
+    RateLimitConfig config = {
+        .max_requests = 10,
+        .window_seconds = 60
+    };
+
+    const char* user_id = "user_123";
+
+    printf("Cấu hình:\n");
+    printf("- Giới hạn: %d requests trong %d giây\n", config.max_requests, config.window_seconds);
+    printf("- Client ID: %s\n", user_id);
+    printf("- Thuật toán: Sliding Window Counter\n\n");
+
+    printf("------------------------------------------\n");
+    printf("TEST: Gửi 15 requests liên tiếp\n");
+    printf("------------------------------------------\n\n");
+
+    int accepted = 0;
+    int rejected = 0;
+
+    for (int i = 1; i <= 15; i++) {
+        RateLimitResult result = check_rate_limit(c, user_id, config);
+        
+        if (result.allowed) {
+            printf("[Request %2d] ✓ ACCEPTED | Remaining: %d/%d\n", 
+                   i, result.remaining, config.max_requests);
+            accepted++;
+        } else {
+            printf("[Request %2d] ✗ REJECTED | Rate limit exceeded | Retry after: %.0f seconds\n", 
+                   i, result.retry_after);
+            rejected++;
+        }
+    }
+
+    printf("\n------------------------------------------\n");
+    printf("Kết quả: %d accepted, %d rejected\n", accepted, rejected);
+    printf("==========================================\n");
 }
