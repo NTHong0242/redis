@@ -52,6 +52,7 @@ add_executable(redis
     src/redis_utils.c
     src/analytics.c
     src/temp_storage.c
+    src/rate_limiter.c
 )
 
 # Link libraries theo OS
