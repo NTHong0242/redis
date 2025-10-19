@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include <uuid/uuid.h>
 #include "rate_limiter.h"
 
@@ -144,6 +145,8 @@ void perform_rate_limit_demo(redisContext* c) {
                    i, result.retry_after);
             rejected++;
         }
+
+        sleep(1); 
     }
 
     printf("\n------------------------------------------\n");
