@@ -1,0 +1,23 @@
+# Build artifacts
+build/
+cmake-build-*/
+*.o
+*.a
+*.exe
+redis
+redis.exe
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.env
+docker-compose.override.yml
