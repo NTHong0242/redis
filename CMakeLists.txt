@@ -29,9 +29,9 @@ if(APPLE)
     message(STATUS "Found hiredis library: ${HIREDIS_LIBRARY}")
     
 elseif(WIN32)
-    # Windows - hardcoded paths
-    include_directories("G:/hiredis" "G:/hiredis/hiredis")
-    link_directories("G:/hiredis/build")
+    # Windows - using locally built hiredis
+    include_directories("${PROJECT_SOURCE_DIR}/hiredis")
+    link_directories("${PROJECT_SOURCE_DIR}/hiredis/build/Release")
     set(HIREDIS_LIBRARY hiredis)
     
 else()

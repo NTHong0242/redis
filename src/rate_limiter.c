@@ -1,24 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <uuid/uuid.h>
+#include <time.h>
 #include "rate_limiter.h"
+
+#ifdef _WIN32
+    #define WIN32_LEAN_AND_MEAN
+    #include <winsock2.h>
+    #include <windows.h>
+#else
+    #include <sys/time.h>
+    #include <unistd.h>
+    #include <uuid/uuid.h>
+#endif
 
 // Lấy timestamp hiện tại (giây với độ chính xác microsecond)
 double get_current_timestamp() {
+#ifdef _WIN32
+    FILETIME ft;
+    ULARGE_INTEGER ui;
+    GetSystemTimeAsFileTime(&ft);
+    ui.LowPart = ft.dwLowDateTime;
+    ui.HighPart = ft.dwHighDateTime;
+    
+    // Convert to Unix timestamp (seconds since 1970-01-01)
+    // Windows FILETIME is 100-nanosecond intervals since 1601-01-01
+    // Unix epoch starts 11644473600 seconds later
+    return (double)(ui.QuadPart / 10000000ULL - 11644473600ULL) + 
+           (double)(ui.QuadPart % 10000000ULL) / 10000000.0;
+#else
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (double)tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+#endif
 }
 
 // Tạo unique request ID
 const char* generate_request_id() {
     static char uuid_str[37];
+#ifdef _WIN32
+    // Simple UUID replacement for Windows using random numbers and timestamp
+    srand((unsigned int)time(NULL));
+    snprintf(uuid_str, sizeof(uuid_str), 
+             "%08x-%04x-%04x-%04x-%08x%04x",
+             rand(), rand() & 0xffff, rand() & 0xffff,
+             rand() & 0xffff, rand(), rand() & 0xffff);
+#else
     uuid_t uuid;
     uuid_generate(uuid);
     uuid_unparse(uuid, uuid_str);
+#endif
     return uuid_str;
 }
 
@@ -146,7 +177,11 @@ void perform_rate_limit_demo(redisContext* c) {
             rejected++;
         }
 
-        sleep(1); 
+#ifdef _WIN32
+        Sleep(1000); // Windows Sleep takes milliseconds
+#else
+        sleep(1); // Unix sleep takes seconds
+#endif
     }
 
     printf("\n------------------------------------------\n");
