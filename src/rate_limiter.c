@@ -188,7 +188,7 @@ void perform_rate_limit_demo(redisContext* c) {
             rejected++;
         }
 
-        sleep(1); 
+        sleep(0.5); 
     }
 
     printf("\n------------------------------------------\n");
