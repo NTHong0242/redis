@@ -102,6 +102,48 @@ RateLimitResult check_rate_limit(redisContext* c, const char* identifier, RateLi
     return result;
 }
 
+// Mô phỏng nhiều client đồng thời
+void simulate_multiple_clients(redisContext* c, RateLimitConfig config) {
+    if (!c) return;
+
+    const char* clients[] = {"user_A", "user_B", "user_C"};
+    int num_clients = 3;
+    int stats_accepted[3] = {0, 0, 0};
+    int stats_rejected[3] = {0, 0, 0};
+
+    printf("\n------------------------------------------\n");
+    printf("TEST 2: Mô phỏng nhiều client đồng thời\n");
+    printf("------------------------------------------\n\n");
+
+    // Mỗi client gửi 15 requests, xen kẽ nhau
+    for (int round = 1; round <= 15; round++) {
+        for (int client_idx = 0; client_idx < num_clients; client_idx++) {
+            RateLimitResult result = check_rate_limit(c, clients[client_idx], config);
+            
+            if (result.allowed) {
+                printf("[Client %s - Request %2d] ✓ ACCEPTED | Remaining: %d/%d\n",
+                       clients[client_idx], round, result.remaining, config.max_requests);
+                stats_accepted[client_idx]++;
+            } else {
+                printf("[Client %s - Request %2d] ✗ REJECTED | Rate limit exceeded\n",
+                       clients[client_idx], round);
+                stats_rejected[client_idx]++;
+            }
+            
+            usleep(500000); // 0.5 giây delay giữa mỗi request
+        }
+        printf("\n");
+    }
+
+    printf("------------------------------------------\n");
+    printf("Statistics:\n");
+    for (int i = 0; i < num_clients; i++) {
+        printf("- Client %s: %d accepted, %d rejected\n",
+               clients[i], stats_accepted[i], stats_rejected[i]);
+    }
+    printf("------------------------------------------\n");
+}
+
 // Thực hiện demo các tính năng rate limiter
 void perform_rate_limit_demo(redisContext* c) {
     if (!c) {
@@ -151,5 +193,10 @@ void perform_rate_limit_demo(redisContext* c) {
 
     printf("\n------------------------------------------\n");
     printf("Kết quả: %d accepted, %d rejected\n", accepted, rejected);
-    printf("==========================================\n");
+    printf("------------------------------------------\n");
+
+    // Test 2: Multi-client scenario
+    simulate_multiple_clients(c, config);
+
+    printf("\n==========================================\n");
 }
