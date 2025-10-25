@@ -22,3 +22,9 @@ add_executable(redis
 
 # Link libraries - Windows socket library
 target_link_libraries(redis ${HIREDIS_LIBRARY} ws2_32)
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+    G:/hiredis
+)
+install(TARGETS redis
+        RUNTIME DESTINATION bin)

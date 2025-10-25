@@ -1,5 +1,5 @@
 #pragma once
-#include <hiredis/hiredis.h>
+#include <hiredis.h>
 
 // Cấu trúc lưu kết quả kiểm tra rate limit
 typedef struct {
