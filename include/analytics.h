@@ -1,5 +1,6 @@
 #pragma once
-#include <hiredis.h>
+#include "hiredis.h"
 
 // Chức năng: thống kê thời gian thực
 void perform_real_time_analytics(redisContext* c);
+void perform_rate_limit_demo(redisContext* c);

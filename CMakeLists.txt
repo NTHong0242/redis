@@ -1,30 +1,37 @@
 cmake_minimum_required(VERSION 3.10)
-project(redis C)
+project(redis_project C)
 
 set(CMAKE_C_STANDARD 11)
 
-# Include headers từ project
-include_directories(${PROJECT_SOURCE_DIR}/include)
+# -----------------------------------------
+# Đường dẫn Hiredis static
+# -----------------------------------------
+set(Hiredis_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/hiredis")
+set(Hiredis_LIBRARY "${CMAKE_SOURCE_DIR}/hiredis/build/libhiredis.a")
 
-# Windows - using locally built hiredis
-include_directories("${PROJECT_SOURCE_DIR}/hiredis")
-link_directories("${PROJECT_SOURCE_DIR}/hiredis/build/Release")
-set(HIREDIS_LIBRARY hiredis)
+# -----------------------------------------
+# Include headers
+# -----------------------------------------
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${Hiredis_INCLUDE_DIR}
+)
 
-# File nguồn
+# -----------------------------------------
+# Thêm file source
+# -----------------------------------------
 add_executable(redis
     src/main.c
-    src/redis_utils.c
+    src/rate_limiter.c
     src/analytics.c
     src/temp_storage.c
-    src/rate_limiter.c
+    src/redis_utils.c
 )
 
-# Link libraries - Windows socket library
-target_link_libraries(redis ${HIREDIS_LIBRARY} ws2_32)
-include_directories(
-    ${PROJECT_SOURCE_DIR}/include
-    G:/hiredis
+# -----------------------------------------
+# Link Hiredis static + Winsock (Windows)
+# -----------------------------------------
+target_link_libraries(redis
+    ${Hiredis_LIBRARY}
+    ws2_32
 )
-install(TARGETS redis
-        RUNTIME DESTINATION bin)

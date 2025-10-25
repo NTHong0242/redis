@@ -1,16 +1,27 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "MSYS2-GCC",
             "includePath": [
+                "${workspaceFolder}/**",
+                "C:/msys64/mingw64/include",
+                "C:/msys64/mingw64/include/c++/15.2.0",
+                "C:/msys64/mingw64/include/c++/15.2.0/x86_64-w64-mingw32",
                 "${workspaceFolder}/include",
-                "G:/hiredis",
-                "G:",
-                "G:/redis-unstable/deps"
+                "${workspaceFolder}/hiredis"
             ],
-            "compilerPath": "C:/Program Files (x86)/mingw-w64/i686-8.1.0-posix-dwarf-rt_v6-rev0/mingw32/bin/gcc.exe",
+            "defines": [],
+            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe",
             "cStandard": "c11",
-            "intelliSenseMode": "windows-gcc-x64"
+            "cppStandard": "c++17",
+            "browse": {
+                "path": [
+                    "C:/msys64/mingw64/include",
+                    "C:/msys64/mingw64/include/c++/15.2.0",
+                    "${workspaceFolder}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         }
     ],
     "version": 4
